@@ -5,12 +5,16 @@ import fs from 'fs';
 
 const app = express();
 
+app.get('/', (req, res) => {
+    console.log(req);
+    return res.status(200).send('Hello World');
+});
+
 // Connect to MongoDB
 const loginData = fs.readFileSync('./login.json', 'utf8');
 const login = JSON.parse(loginData);
 const mongodbstring = login.mongodbstring;
 
-// Connect to MongoDB using the mongodbstring
 mongoose
     .connect(mongodbstring)
     .then(() => {
