@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Spinner from "../components/Spinner";
+import { Link } from "react-router-dom";
 
 export const Home = () => {
   const [products, setProducts] = useState([]);
@@ -75,10 +76,18 @@ export const Home = () => {
                   {discounts[product._id] ? `-${discounts[product._id]}%` : ""}
                 </span>
               </p>
-
-              <a href={product.url} className="text-blue-500 underline">
-                View Product
-              </a>
+              <p>
+                {" "}
+                <a href={product.url} className="text-blue-500 underline">
+                  View Product
+                </a>
+              </p>
+              <Link
+                to={`/prices/${product._id}`}
+                className="text-blue-500 underline"
+              >
+                View Price History
+              </Link>
             </div>
           ))}
         </div>

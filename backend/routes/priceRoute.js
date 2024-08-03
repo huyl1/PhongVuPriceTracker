@@ -10,6 +10,33 @@ router.get("/", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
+router.get('/:sku', (req, res) => {
+  const { sku } = req.params;
+
+  Price // Find all prices for the given SKU
+    .find({ sku })
+    .limit(1000) // Limit to 1000 items
+    .sort({ date: -1 }) // Sort by date in descending order
+    .then((prices) => res.json(prices))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+
+// find most discounted limited to 10 items
+router.get('/most-discount', async (req, res) => {
+  try {
+    const prices = await Price.find()
+      .sort({ 'discount (%)': -1 }) // Sort by discount in descending order
+      .limit(10) // Limit to 10 items
+      .exec();
+
+    res.json(prices);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 router.get('/latest/:sku', async (req, res) => {
   const { sku } = req.params;
 
