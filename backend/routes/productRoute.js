@@ -4,7 +4,8 @@ import Product from '../models/productModel.js';
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    Product.find().limit(25)
+    const limit = Math.min(parseInt(req.query.limit) || 25, 500);
+    Product.find().limit(limit)
       .then(products => res.json(products))
       .catch(err => res.status(500).json({ error: err.message }));
   });

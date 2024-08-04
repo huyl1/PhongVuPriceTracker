@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 export const BackButton = () => {
   return (
-    <div className='flex items-center mt-4'>
+    <div className='flex items-center mt-4 mb-4'>
         <Link to='/' className='flex items-center'>
             <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -24,5 +24,6 @@ export const BackButton = () => {
     </div>
   )
 }
+
 
 export default BackButton;
