@@ -7,6 +7,7 @@ import Price from './models/priceModel.js';
 import productRoute from './routes/productRoute.js';
 import priceRoute from './routes/priceRoute.js';
 import cors from 'cors';
+import "dotenv/config.js";
 
 const app = express();
 
@@ -33,12 +34,9 @@ app.use('/products', productRoute);
 app.use('/prices', priceRoute);
 
 // Connect to MongoDB
-const loginData = fs.readFileSync('./login.json', 'utf8');
-const login = JSON.parse(loginData);
-const mongodbstring = login.mongodbstring;
 
 mongoose
-    .connect(mongodbstring)
+    .connect(process.env.MONGODB_URI)
     .then(() => {
         console.log('Connected to MongoDB');
         app.listen(PORT, () => {
