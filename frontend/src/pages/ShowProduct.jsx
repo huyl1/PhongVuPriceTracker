@@ -44,7 +44,7 @@ export const ShowProduct = () => {
       setPrices(
         response.data.map((item) => ({
           ...item,
-          date: item.date.split("T")[0], // This splits the date string and takes only the date part
+          date: item.date.split("T")[0], // yyyy-mm-dd
         }))
       );
     } catch (error) {
@@ -66,39 +66,41 @@ export const ShowProduct = () => {
       <div className="p-4">
         <BackButton />
         <h1 className="text-2xl font-semibold mb-4">{product.name}</h1>
-        <div className="flex items-center mb-4">
+        <div className="flex flex-col md:flex-row items-center mb-4">
           <img
             src={product.image}
             alt={product.name}
-            className="rounded max-w-[400px] max-h-[400px] w-auto h-auto mr-8"
+            className="rounded max-w-full md:max-w-[400px] max-h-[400px] w-auto h-auto mb-4 md:mb-0 md:mr-8"
           />
           {loading ? (
             <Spinner />
           ) : (
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart
-                data={prices}
-                margin={{ top: 25, right: 30, left: 45, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" tickMargin={10} />
-                <YAxis tickFormatter={formatCurrency} />
-                <Tooltip formatter={formatCurrency} />
-                <Line
-                  type="monotone"
-                  dataKey="retail price (VND)"
-                  stroke="#ff0000"
-                  activeDot={{ r: 8 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="price (VND)"
-                  stroke="#8884d8"
-                  strokeDasharray="5 5"
-                  activeDot={{ r: 8 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <div className="w-full h-64 sm:h-80 md:h-96">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={prices}
+                  margin={{ top: 25, right: 30, left: 45, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" tickMargin={10} />
+                  <YAxis tickFormatter={formatCurrency} />
+                  <Tooltip formatter={formatCurrency} />
+                  <Line
+                    type="monotone"
+                    dataKey="retail price (VND)"
+                    stroke="#ff0000"
+                    activeDot={{ r: 8 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="price (VND)"
+                    stroke="#8884d8"
+                    strokeDasharray="5 5"
+                    activeDot={{ r: 8 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </div>
       </div>
