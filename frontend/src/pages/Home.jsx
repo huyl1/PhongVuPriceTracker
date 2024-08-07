@@ -12,7 +12,7 @@ export const Home = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/prices/most-discounted?limit=5")
+      .get("http://phongvupricetracker.duckdns.org:3000/prices/most-discounted?limit=5")
       .then((response) => {
         const prices = response.data.reduce((acc, price) => {
           acc[price.sku] = price;
@@ -33,7 +33,7 @@ export const Home = () => {
 
   const fetchProduct = (sku) => {
     axios
-      .get(`http://localhost:3000/products/${sku}`)
+      .get(`http://phongvupricetracker.duckdns.org:3000/products/${sku}`)
       .then((response) => {
         setProducts((prev) => [...prev, response.data]);
       })

@@ -26,7 +26,7 @@ export const ShowProduct = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:3000/products/${sku}`)
+      .get(`http://phongvupricetracker.duckdns.org:3000/products/${sku}`)
       .then((response) => {
         setProduct(response.data);
         fetchPriceHistory(sku);
@@ -40,7 +40,7 @@ export const ShowProduct = () => {
 
   const fetchPriceHistory = async (sku) => {
     try {
-      const response = await axios.get(`http://localhost:3000/prices/${sku}`);
+      const response = await axios.get(`http://phongvupricetracker.duckdns.org:3000/prices/${sku}`);
       setPrices(
         response.data.map((item) => ({
           ...item,
