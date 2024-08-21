@@ -25,11 +25,6 @@ app.use(express.json());
 
 app.use(cors());
 
-app.get('/', (req, res) => {
-    console.log(req);
-    return res.status(200).send('Hello World');
-});
-
 app.use('/products', productRoute);
 
 app.use('/prices', priceRoute);
