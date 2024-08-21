@@ -6,6 +6,7 @@ import Product from './models/productModel.js';
 import Price from './models/priceModel.js';
 import productRoute from './routes/productRoute.js';
 import priceRoute from './routes/priceRoute.js';
+import collectionRoute from './routes/collectionRoute.js';
 import cors from 'cors';
 import "dotenv/config.js";
 
@@ -32,6 +33,8 @@ app.get('/', (req, res) => {
 app.use('/products', productRoute);
 
 app.use('/prices', priceRoute);
+
+app.use('/collections', collectionRoute);
 
 // Connect to MongoDB
 

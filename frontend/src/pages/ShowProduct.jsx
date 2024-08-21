@@ -26,7 +26,7 @@ export const ShowProduct = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://phongvupricetracker.duckdns.org:3000/products/${sku}`)
+      .get(import.meta.env.VITE_BACKEND_URL + `products/${sku}`)
       .then((response) => {
         setProduct(response.data);
         fetchPriceHistory(sku);
@@ -40,7 +40,9 @@ export const ShowProduct = () => {
 
   const fetchPriceHistory = async (sku) => {
     try {
-      const response = await axios.get(`http://phongvupricetracker.duckdns.org:3000/prices/${sku}`);
+      const response = await axios.get(
+        import.meta.env.VITE_BACKEND_URL + `prices/${sku}`
+      );
       setPrices(
         response.data.map((item) => ({
           ...item,
@@ -74,6 +76,10 @@ export const ShowProduct = () => {
           />
           {loading ? (
             <Spinner />
+          ) : prices.length <= 1 ? (
+            <div className="w-full h-64 sm:h-80 md:h-96 flex items-center justify-center bg-gray-200 text-gray-600">
+              No price history
+            </div>
           ) : (
             <div className="w-full h-64 sm:h-80 md:h-96">
               <ResponsiveContainer width="100%" height="100%">
@@ -88,15 +94,20 @@ export const ShowProduct = () => {
                   <Line
                     type="monotone"
                     dataKey="retail price (VND)"
-                    stroke="#ff0000"
+                    name="Retail Price"
+                    stroke="#000000"
+                    strokeWidth={4} 
                     activeDot={{ r: 8 }}
+                    dot={false}
                   />
                   <Line
                     type="monotone"
                     dataKey="price (VND)"
-                    stroke="#8884d8"
-                    strokeDasharray="5 5"
+                    name="Discounted Price"
+                    stroke="#427F45"
+                    strokeWidth={4}
                     activeDot={{ r: 8 }}
+                    dot={false}
                   />
                 </LineChart>
               </ResponsiveContainer>
