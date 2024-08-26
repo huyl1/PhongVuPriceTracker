@@ -7,6 +7,8 @@ import Price from './models/priceModel.js';
 import productRoute from './routes/productRoute.js';
 import priceRoute from './routes/priceRoute.js';
 import collectionRoute from './routes/collectionRoute.js';
+import suggestionRoute from './routes/suggestionRoute.js';
+import searchRoute from './routes/searchRoute.js';
 import cors from 'cors';
 import "dotenv/config.js";
 
@@ -15,14 +17,6 @@ const app = express();
 // Middleware to parse JSON data
 app.use(express.json());
 
-// // Middleware to enable CORS
-// app.use(
-//     cors({
-//         origin: 'http://localhost:3000',
-//         credentials: true,
-//         allowedHeaders: ['Content-Type'],
-//     }));
-
 app.use(cors());
 
 app.use('/products', productRoute);
@@ -30,6 +24,10 @@ app.use('/products', productRoute);
 app.use('/prices', priceRoute);
 
 app.use('/collections', collectionRoute);
+
+app.use('/suggestions', suggestionRoute);
+
+app.use('/search', searchRoute);
 
 // Connect to MongoDB
 

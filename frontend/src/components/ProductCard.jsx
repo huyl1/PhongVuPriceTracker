@@ -4,18 +4,18 @@ import { Link } from "react-router-dom";
 
 const ProductCard = ({product}) => {
   return (
-    <div className="border p-4 rounded-lg shadow">
+    <div className="border p-4 rounded-sm shadow">
       <Link to={`/prices/${product.sku}`}>
         <img
           src={product.image}
           alt={product.name}
           loading="lazy"
-          className="w-full h-48 object-cover mb-2 rounded"
+          className="w-full max-h-48 object-cover mb-2 rounded"
         />
       </Link>
       <h2 className="text-xl font-bold">
-        {product.name.length > 30
-          ? `${product.name.substring(0, 40)}...`
+        {product.name.length > 34
+          ? `${product.name.substring(0, 34)}...`
           : product.name}
       </h2>
       <p className="text-gray-700">

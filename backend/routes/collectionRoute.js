@@ -7,6 +7,7 @@ const router = express.Router();
 router.get("/most-discounted", async (req, res) => {
   let limit = parseInt(req.query.limit) || 5; // Default to 5 items
   limit = Math.min(limit, 500); // Limit to 500 items
+  let isDemo = req.query.demo === 'true';
 
   try {
     // Find the latest date in the collection
@@ -41,7 +42,6 @@ router.get("/most-discounted", async (req, res) => {
       },
       { $replaceRoot: { newRoot: "$doc" } },
       { $sort: { "discount (%)": -1 } },
-      { $limit: limit },
       {
         $lookup: {
           from: "products",
@@ -50,6 +50,12 @@ router.get("/most-discounted", async (req, res) => {
           as: "productDetails",
         },
       },
+      {
+        $match: {
+          "productDetails.demo": isDemo,
+        }
+      },
+      { $limit: limit },
       {
         $unwind: "$productDetails",
       },
