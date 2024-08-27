@@ -29,11 +29,13 @@ export const Home = () => {
   } = useQuery("home_products", retrieveProducts, {
     refetchInterval: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
   });
 
   const { data: suggestions } = useQuery("suggestions", retrieveSuggestions, {
     refetchInterval: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
   });
 
   if (isLoading) return <Spinner />;
@@ -49,10 +51,7 @@ export const Home = () => {
             {suggestions.map((suggestion) => (
               <div key={suggestion} className="p-4">
                 <Link
-                  to={`/search?query=${encodeURIComponent(suggestion).replace(
-                    /%20/g,
-                    "+"
-                  )}`}
+                  to={`/search?query=${encodeURIComponent(suggestion)}`} 
                   className="text-gray-500 hover:text-gray-700"
                 >
                   {suggestion}

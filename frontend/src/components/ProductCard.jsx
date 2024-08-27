@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const ProductCard = ({product}) => {
+const ProductCard = ({ product }) => {
   return (
     <div className="border p-4 rounded-sm shadow">
       <Link to={`/prices/${product.sku}`}>
@@ -14,11 +14,10 @@ const ProductCard = ({product}) => {
         />
       </Link>
       <h2 className="text-xl font-bold">
-        {product.name.length > 34
-          ? `${product.name.substring(0, 34)}...`
-          : product.name}
+        {product.name.substring(0, 34)}
       </h2>
-      <p className="text-gray-700">
+      {product.discount ? (
+        <p className="text-gray-700">
           <>
             <span className="line-through">
               {product.retailPrice.toLocaleString()} VND
@@ -32,10 +31,15 @@ const ProductCard = ({product}) => {
                 product.discount ? "text-red-500" : "text-gray-500"
               }`}
             >
-              {product.discount ? `-${product.discount}%` : ""}
+              -${product.discount}%
             </span>
           </>
-      </p>
+        </p>
+      ) : (
+        <p className="text-xl font-thin">
+          {product.price.toLocaleString()} VND
+        </p>
+      )}
       <p>
         <a href={product.url} className="text-blue-500 underline">
           View Product

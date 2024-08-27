@@ -1,16 +1,29 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-export const SearchBar = () => {
+// eslint-disable-next-line react/prop-types
+export const SearchBar = ({query}) => {
+
+  const navigate = useNavigate();
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const query = formData.get('query');
+    navigate(`/search?query=${encodeURIComponent(query)}`);
+  };
+
   return (
-    <div className="w-screen flex justify-center items-center p-4">
+    <div className="w-screen flex justify-center items-center p-4 max-w-full">
       <div className="max-w-[780px] w-full">
-        <form action="/search" className="w-full px-4">
+        <form onSubmit={handleSubmit} className="w-full px-4">
           <div className="relative">
             <input
               type="text"
               name="query"
               className="w-full border h-12 shadow p-4 rounded-full dark:text-gray-800 dark:border-gray-700 dark:bg-gray-200"
               placeholder="Search over 12000+ products..."
+              defaultValue={query}
             />
             <button 
               type="submit"

@@ -21,8 +21,6 @@ export const ShowProduct = () => {
   const [loading, setLoading] = useState(true);
   const { sku } = useParams();
 
-  console.log(sku);
-
   useEffect(() => {
     setLoading(true);
     axios
