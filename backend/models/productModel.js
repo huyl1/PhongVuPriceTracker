@@ -20,6 +20,9 @@ const productSchema = new mongoose.Schema({
   },
   demo: {
     type: Boolean
+  },
+  last_update: {
+    type: Date
   }
 });
 

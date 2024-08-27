@@ -6,28 +6,55 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   let query = req.query.query || "macbook";
-  const limit = req.query.limit || 50;
-  console.log("query:", query);
-  if (limit > 50) {
-    limit = 50;
-  }
-  if (query.length < 3) {
+  const productsPerPage = 6;
+  const page = req.query.page || 0;
+
+  if (!query || query.length < 3) {
     return res
       .status(400)
       .json({ message: "Query length must be at least 3 characters." });
   }
 
-  // normalize query
-  query = query.toLowerCase().trim;
+  //remove accents and special characters from query
+  query = query.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   try {
     const products = await Product.aggregate([
+      // search for products
+      { 
+        $search: {
+          index: "searchProduct",
+          text: {
+            query: query,
+            path: ["brand", "name_normalized"]
+          }
+        }
+      },
+      { $skip: productsPerPage * page },
+      { $limit: productsPerPage },
+      { $sort: { score: { $meta: "textScore" } } },
+      // join with prices collection
       {
-        $match: {
-          name_normalized: { $regex: "macbook", $options: "i" },
+        $lookup: {
+          from: "prices", // the collection to join
+          let: { product_id: "$_id", last_update: "$last_update" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$sku", "$$product_id"] },
+                    { $eq: ["$date", "$$last_update"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "product_prices",
         },
       },
     ]);
+
     return res.json(products);
   } catch (error) {
     return res.status(500).json({ message: error.message });

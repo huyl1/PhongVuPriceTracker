@@ -1,9 +1,6 @@
 import express from 'express';
 import { PORT } from './config';
 import mongoose from 'mongoose';
-import fs from 'fs';
-import Product from './models/productModel.js';
-import Price from './models/priceModel.js';
 import productRoute from './routes/productRoute.js';
 import priceRoute from './routes/priceRoute.js';
 import collectionRoute from './routes/collectionRoute.js';
