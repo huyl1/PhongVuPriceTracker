@@ -74,7 +74,7 @@ export const ShowProduct = () => {
           />
           {loading ? (
             <Spinner />
-          ) : prices.length <= 1 ? (
+          ) : prices.length == 0 ? (
             <div className="w-full h-64 sm:h-80 md:h-96 flex items-center justify-center bg-gray-200 text-gray-600">
               No price history
             </div>

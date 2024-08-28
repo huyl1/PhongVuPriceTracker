@@ -1,38 +1,62 @@
-import React from "react";
+import React, { useEffect } from "react";
 import SearchBar from "../components/SearchBar";
 import NavBar from "../components/NavBar";
 import ProductCard from "../components/ProductCard";
 import axios from "axios";
-import { useQuery } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import { useSearchParams } from "react-router-dom";
+import { useInView } from "react-intersection-observer";
 
-const retrieveSearchResults = async (searchQuery) => {
-  const url = `${import.meta.env.VITE_BACKEND_URL}search?query=${encodeURIComponent(searchQuery)}`;
+const retrieveSearchResults = async ({ queryKey, pageParam }) => {
+  const url = `${
+    import.meta.env.VITE_BACKEND_URL
+  }search?query=${encodeURIComponent(queryKey[1])}&sort=${queryKey[2]}&page=${
+    pageParam || 0
+  }`;
   try {
     const { data } = await axios.get(url);
     return data;
   } catch (error) {
-    console.error('Failed to fetch data:', error);
+    console.error("Failed to fetch data:", error);
     throw error;
   }
 };
 
+// helper to get product details
+const getProductDetails = (product) => ({
+  sku: product._id,
+  name: product.name,
+  image: product.image,
+  url: product.url,
+  // product.product_prices can be an empty array --> default to "n/a"
+  price: product.product_prices?.[0]?.["price (VND)"] ?? "n/a",
+  retailPrice: product.product_prices?.[0]?.["retail price (VND)"] ?? "n/a",
+  discount: product.product_prices?.[0]?.["discount (%)"] ?? 0,
+});
+
 export const QueryResult = () => {
-  const [searchParams] = useSearchParams();
-  const query = searchParams.get("query");
+  const query = useSearchParams()[0].get("query"); //fetch query from url
 
-  const { data: products, isLoading } = useQuery(
-    ['search_results', query],  // Include the query as part of the query key
-    () => retrieveSearchResults(query),  // Pass the query to the API call function
-    {
-      refetchInterval: 1000 * 60 * 15, //
-      refetchOnWindowFocus: false,
+  const [sort, setSort] = React.useState("relevance");
+  const { ref, inView } = useInView();
+
+  const { data, status, error, fetchNextPage, hasNextPage} = useInfiniteQuery({
+    queryKey: ["search", query, sort],
+    queryFn: retrieveSearchResults,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, pages) => {
+      return pages.length + 1;
+    },
+  });
+
+  // infinite scroll
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
     }
-  );
+  }, [inView, fetchNextPage, hasNextPage]);
 
-  console.log(products);
-
-  if (isLoading || !products) {
+  if (status === "loading") {
     return (
       <div>
         <NavBar />
@@ -40,7 +64,21 @@ export const QueryResult = () => {
           <SearchBar />
         </div>
         <div className="flex justify-center items-center h-64">
-          <div className="text-lg font-medium">Loading...</div> 
+          <div className="text-lg font-medium">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <div>
+        <NavBar />
+        <div className="min-h-40 mt-10">
+          <SearchBar />
+        </div>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg font-medium">Error: {error.message}</div>
         </div>
       </div>
     );
@@ -50,27 +88,22 @@ export const QueryResult = () => {
     <div>
       <NavBar />
       <div className="min-h-40 mt-10">
-        <SearchBar/>
+        <SearchBar />
       </div>
       <div className="p-4">
         <h5 className="text-3xl font-bold">Sort by</h5>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-4 border-2 border-gray-300 p-4 rounded-sm">
-          {products.map((product) => (
-            <ProductCard
-              key={product.sku}
-              product={{
-                sku: product._id,
-                name: product.name,
-                image: product.image,
-                url: product.url,
-                price: product.product_prices[0]["price (VND)"] || 0,
-                retailPrice: product.product_prices[0]["retail price (VND)"] || 0,
-                discount: product.product_prices[0]["discount (%)"] || 0,
-              }}
-            />
-          ))}
+          {data.pages.map((page) =>
+            page.map((product) => (
+              <ProductCard
+                key={product.sku}
+                product={getProductDetails(product)}
+              />
+            ))
+          )}
         </div>
       </div>
+      <div ref={ref}></div>
     </div>
   );
 };
