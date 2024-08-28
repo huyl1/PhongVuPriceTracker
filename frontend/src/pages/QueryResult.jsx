@@ -45,7 +45,7 @@ export const QueryResult = () => {
     queryFn: retrieveSearchResults,
     initialPageParam: 0,
     getNextPageParam: (lastPage, pages) => {
-      return pages.length + 1;
+      return lastPage.length === 0 ? undefined : pages.length + 1;
     },
   });
 
@@ -84,16 +84,30 @@ export const QueryResult = () => {
     );
   }
 
+  if (data.pages[0].length === 0) {
+    return (
+      <div>
+        <NavBar />
+        <div className="min-h-40 mt-10">
+          <SearchBar />
+        </div>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg font-medium">No results found.</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <NavBar />
       <div className="min-h-40 mt-10">
         <SearchBar />
       </div>
-      <div className="p-4">
+      <div className="p-4 relative">
         <h5 className="text-3xl font-bold">Sort by</h5>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-4 border-2 border-gray-300 p-4 rounded-sm">
-          {data.pages.map((page) =>
+          {data.pages.map((page) => 
             page.map((product) => (
               <ProductCard
                 key={product.sku}
@@ -101,9 +115,11 @@ export const QueryResult = () => {
               />
             ))
           )}
+          {hasNextPage && <div className="absolute bottom-0 left-0 w-full h-80" ref={ref}></div>}
         </div>
       </div>
-      <div ref={ref}></div>
+      {!hasNextPage && <div className="text-center text-gray-500">End of results.</div>}
+      {console.log(hasNextPage)}
     </div>
   );
 };

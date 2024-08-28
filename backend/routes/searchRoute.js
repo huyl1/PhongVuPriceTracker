@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   let query = req.query.query || "macbook";
-  const productsPerPage = 12;
+  const productsPerPage = 6;
   const page = req.query.page || 0;
 
   if (!query || query.length < 3) {
