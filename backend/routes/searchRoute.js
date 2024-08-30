@@ -4,10 +4,24 @@ import Price from "../models/priceModel.js";
 
 const router = express.Router();
 
+const sortParams = (sortText) => {
+  switch (sortText) {
+    case "price-low-to-high":
+      return { last_price: 1 };
+    case "price-high-to-low":
+      return { last_price: -1 };
+    case "discount-high-to-low":
+      return { last_discount: -1 };
+    default:
+      return { score: { $meta: "searchScore" } };
+  }
+};
+
 router.get("/", async (req, res) => {
   let query = req.query.query || "macbook";
   const productsPerPage = 6;
-  const page = req.query.page || 0;
+  const page = req.query.page > 0 ? req.query.page - 1 : 0;
+  const sort = req.query.sort || "relevance";
 
   if (!query || query.length < 3) {
     return res
@@ -21,19 +35,26 @@ router.get("/", async (req, res) => {
   try {
     const products = await Product.aggregate([
       // search for products
-      { 
+      {
         $search: {
-          index: "searchProduct",
           text: {
             query: query,
-            path: ["brand", "name_normalized"]
-          }
-        }
+            path: ["brand", "name_normalized"],
+          },
+        },
       },
+      {
+        $match: {
+          last_price: {
+            $exists: true,
+          },
+        },
+      },
+      ...(sort !== "relevance" ? [{ $sort: sortParams(sort) }] : []), // if sort is not relevance, sort the results
+      { $limit: 100 }, // limit the number of results to ensure quality
       { $skip: productsPerPage * page },
       { $limit: productsPerPage },
-      { $sort: { score: { $meta: "textScore" } } },
-      // join with prices collection
+      //join with prices collection
       {
         $lookup: {
           from: "prices", // the collection to join

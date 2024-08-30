@@ -2,16 +2,20 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
-export const SearchBar = ({query}) => {
+export const SearchBar = () => {
 
   const navigate = useNavigate();
 
+  // handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const query = formData.get('query');
     navigate(`/search?query=${encodeURIComponent(query)}`);
   };
+
+  // fetch the query from the url
+  const query = new URLSearchParams(window.location.search).get("query") || "";
 
   return (
     <div className="w-screen flex justify-center items-center p-4 max-w-full">

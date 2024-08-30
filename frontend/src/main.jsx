@@ -4,6 +4,7 @@ import App from './App.jsx';
 import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -13,5 +14,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <App />
     </BrowserRouter>
+    <ReactQueryDevtools initialIsOpen={true} />
   </QueryClientProvider>
 );

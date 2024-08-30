@@ -11,8 +11,9 @@ const retrieveSearchResults = async ({ queryKey, pageParam }) => {
   const url = `${
     import.meta.env.VITE_BACKEND_URL
   }search?query=${encodeURIComponent(queryKey[1])}&sort=${queryKey[2]}&page=${
-    pageParam || 0
+    pageParam || 1
   }`;
+  console.log("Fetching data from:", url);
   try {
     const { data } = await axios.get(url);
     return data;
@@ -38,12 +39,13 @@ export const QueryResult = () => {
   const query = useSearchParams()[0].get("query"); //fetch query from url
 
   const [sort, setSort] = React.useState("relevance");
+  const sortOptions = ["relevance", "price-low-to-high", "price-high-to-low", "discount-high-to-low"];
   const { ref, inView } = useInView();
 
   const { data, status, error, fetchNextPage, hasNextPage} = useInfiniteQuery({
     queryKey: ["search", query, sort],
     queryFn: retrieveSearchResults,
-    initialPageParam: 0,
+    initialPageParam: 1,
     getNextPageParam: (lastPage, pages) => {
       return lastPage.length === 0 ? undefined : pages.length + 1;
     },
@@ -61,7 +63,7 @@ export const QueryResult = () => {
       <div>
         <NavBar />
         <div className="min-h-40 mt-10">
-          <SearchBar />
+          <SearchBar/>
         </div>
         <div className="flex justify-center items-center h-64">
           <div className="text-lg font-medium">Loading...</div>
@@ -75,7 +77,7 @@ export const QueryResult = () => {
       <div>
         <NavBar />
         <div className="min-h-40 mt-10">
-          <SearchBar />
+          <SearchBar/>
         </div>
         <div className="flex justify-center items-center h-64">
           <div className="text-lg font-medium">Error: {error.message}</div>
@@ -105,7 +107,20 @@ export const QueryResult = () => {
         <SearchBar />
       </div>
       <div className="p-4 relative">
-        <h5 className="text-3xl font-bold">Sort by</h5>
+        <div className="flex mt-4">
+        <h5 className="text-3xl font-bold flex pr-3">Sort by</h5>
+          <select
+            value={sort}
+            onChange={(e) => {setSort(e.target.value)}}
+            className="p-2 border-2 border-gray-300 rounded-md"
+          >
+            {sortOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-4 border-2 border-gray-300 p-4 rounded-sm">
           {data.pages.map((page) => 
             page.map((product) => (
@@ -119,7 +134,6 @@ export const QueryResult = () => {
         </div>
       </div>
       {!hasNextPage && <div className="text-center text-gray-500">End of results.</div>}
-      {console.log(hasNextPage)}
     </div>
   );
 };
